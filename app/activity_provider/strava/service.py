@@ -9,6 +9,7 @@ class StravaProvider(ActivityProvider):
     authorization_url = "https://www.strava.com/oauth/authorize"
     token_url = "https://www.strava.com/oauth/token"
     athlete_url = "https://www.strava.com/api/v3/athlete"
+    activities_url = "https://www.strava.com/api/v3/athlete/activities"
 
     @property
     def name(self) -> str:
@@ -48,5 +49,24 @@ class StravaProvider(ActivityProvider):
         )
 
         response.raise_for_status()
+        return response.json()
 
+
+    def get_activities(
+            self,
+            access_token: str,
+            page: int = 1,
+            per_page: int = 10,
+    ) -> list[dict]:
+        response = httpx.get(
+            self.activities_url,
+            headers={
+                "Authorization": f"Bearer {access_token}",
+            },
+            params={
+                "page": page,
+                "per_page": per_page,
+            },
+        )
+        response.raise_for_status()
         return response.json()

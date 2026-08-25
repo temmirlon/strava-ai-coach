@@ -39,11 +39,15 @@ def callback(
     provider = StravaProvider()
     token_data = provider.exchange_authorization_code(code)
     athlete = provider.get_athlete(token_data["access_token"])
+    activities = provider.get_activities(
+        token_data["access_token"]
+    )
 
     return {
         "status": "connected",
         "athlete_id": athlete["id"],
         "firstname": athlete.get("firstname"),
         "lastname": athlete.get("lastname"),
-        "scope": scope,
+        "activities_count": len(activities),
+        "activities": activities,
     }
