@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from fastapi.responses import RedirectResponse
 
 from app.activity_provider.strava.service import StravaProvider
+from app.activity_provider.strava.mapper import map_strava_activity
 
 router = APIRouter(
     prefix = "/providers/strava",
@@ -42,6 +43,10 @@ def callback(
     activities = provider.get_activities(
         token_data["access_token"]
     )
+    mapped_activities = [
+        map_strava_activity(activity)
+        for activity in activities
+    ]
 
     return {
         "status": "connected",
@@ -49,5 +54,5 @@ def callback(
         "firstname": athlete.get("firstname"),
         "lastname": athlete.get("lastname"),
         "activities_count": len(activities),
-        "activities": activities,
+        "activities":  mapped_activities,
     }
